@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "radiohead",
+    "slug": "radiohead",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/adk.jpeg",
+    "scheme": "radiohead",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/adk.jpeg",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.radiohead",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adk.jpeg",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/adk.jpeg"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
