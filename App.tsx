@@ -34,7 +34,7 @@ const openai_api_key = Constants.expoConfig.extra.apikey;
 
 export default function App() {
   const playbackState = useRadioPlaybackState();
-  
+
   useEffect(() => {
     // Enhanced background notifications with media controls
     (async () => {

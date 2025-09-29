@@ -1,23 +1,22 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, Pressable, ScrollView, Linking, Platform, RefreshControl, NativeScrollEvent, NativeSyntheticEvent, Modal, TextInput, Keyboard, TouchableWithoutFeedback } from "react-native";
+import { Keyboard, Linking, Modal, NativeScrollEvent, NativeSyntheticEvent, Platform, Pressable, RefreshControl, ScrollView, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StationPill } from "../components/StationSwitcher";
 import { useUserStore } from "../state/userStore";
 
-import { useStationStore } from "../state/stationStore";
+import NewsRow from "@/components/NewsRow";
 import * as Location from "expo-location";
 import Card from "../components/Card";
-import NewsRow from "../components/NewsRow";
+import { useStationStore } from "../state/stationStore";
 
 import { timeAgo } from "../api/news";
 
 
-import { useRadioStore, useRadioPlaybackState } from "../state/radioStore";
-import { useRadioAudioManager } from "../utils/radioAudioManager";
-import { StreamHealthIndicator } from "../components/StreamHealthIndicator";
-import { useRadioUiStore } from "../state/radioUiStore";
+import { useRadioAudioManager } from "@/utils/radioAudioManager";
 import * as Haptics from "expo-haptics";
-import { Ionicons } from "@expo/vector-icons";
+import { StreamHealthIndicator } from "../components/StreamHealthIndicator";
+import { useRadioPlaybackState, useRadioStore } from "../state/radioStore";
+import { useRadioUiStore } from "../state/radioUiStore";
 
 // Import standardized components
 import StandardHeader from "../components/StandardHeader";
@@ -26,12 +25,21 @@ function domainFrom(link: string): string | undefined {
   try { const u = new URL(link); return u.hostname.replace(/^www\./, ""); } catch { return undefined; }
 }
 
+import { LoaderModal } from "@/components/LoadingScreen";
+
 function RadioStreamStatus() {
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <>
+      <LoaderModal visible={loading} text="Please Wait..." />
+    </>
+  );
   const playbackState = useRadioPlaybackState();
   const currentStationId = useRadioStore((s) => s.currentStationId);
   const streamsByStation = useRadioStore((s) => s.streamsByStation);
   const { playStream, stopStream } = useRadioAudioManager();
-  
+
   // Get current station info
   const stations = useStationStore((s) => s.stations);
   const user = useUserStore((s) => s.user);
@@ -86,25 +94,23 @@ function RadioStreamStatus() {
           {streamConfig.name || streamConfig.url}
         </Text>
       </View>
-      
+
       <Pressable
         onPress={handleToggleStream}
         disabled={playbackState === "loading" || playbackState === "buffering"}
-        className={`px-3 py-1.5 rounded-full ${
-          playbackState === "playing" ? "bg-red-100" : 
+        className={`px-3 py-1.5 rounded-full ${playbackState === "playing" ? "bg-red-100" :
           playbackState === "loading" || playbackState === "buffering" ? "bg-gray-100" :
-          "bg-green-100"
-        }`}
+            "bg-green-100"
+          }`}
       >
-        <Text className={`text-xs font-medium ${
-          playbackState === "playing" ? "text-red-700" : 
+        <Text className={`text-xs font-medium ${playbackState === "playing" ? "text-red-700" :
           playbackState === "loading" || playbackState === "buffering" ? "text-gray-500" :
-          "text-green-700"
-        }`}>
-          {playbackState === "playing" ? "Stop" : 
-           playbackState === "loading" ? "..." :
-           playbackState === "buffering" ? "..." :
-           "Play"}
+            "text-green-700"
+          }`}>
+          {playbackState === "playing" ? "Stop" :
+            playbackState === "loading" ? "..." :
+              playbackState === "buffering" ? "..." :
+                "Play"}
         </Text>
       </Pressable>
     </View>
@@ -235,22 +241,22 @@ export default function DashboardScreen() {
   const openPlayer = useRadioUiStore((s) => s.openPlayer);
   const closePlayer = useRadioUiStore((s) => s.closePlayer);
   const playbackState = useRadioPlaybackState();
-  
+
   // Enhanced time display with better mobile formatting
   const [now, setNow] = useState<Date>(new Date());
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(id); }, []);
-  
+
   const timeStr = useMemo(() => {
     const options: Intl.DateTimeFormatOptions = {
       weekday: "short",
-      month: "short", 
+      month: "short",
       day: "numeric",
-      hour: "2-digit", 
+      hour: "2-digit",
       minute: "2-digit"
     };
     return now.toLocaleString(undefined, options);
   }, [now]);
-  
+
 
 
   const [city, setCity] = useState<string | null>(null);
@@ -283,11 +289,11 @@ export default function DashboardScreen() {
   function weatherIcon(code?: number): string {
     if (code == null) return "☁️";
     if ([0].includes(code)) return "☀️";
-    if ([1,2,3].includes(code)) return "⛅";
-    if ([45,48].includes(code)) return "🌫️";
-    if ([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)) return "🌧️";
-    if ([71,73,75,77,85,86].includes(code)) return "❄️";
-    if ([95,96,99].includes(code)) return "⛈️";
+    if ([1, 2, 3].includes(code)) return "⛅";
+    if ([45, 48].includes(code)) return "🌫️";
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "🌧️";
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return "❄️";
+    if ([95, 96, 99].includes(code)) return "⛈️";
     return "☁️";
   }
   async function fetchWeather() {
@@ -363,12 +369,12 @@ export default function DashboardScreen() {
   const updatedAgo = useMemo(() => lastUpdated ? timeAgo(new Date(lastUpdated).toISOString()) : "", [lastUpdated]);
 
   // Sticky chips + anchors
-  const SECTIONS = ["Station","Location","Weather","Local","Traffic","National"] as const;
+  const SECTIONS = ["Station", "Location", "Weather", "Local", "Traffic", "National"] as const;
   type SectionKey = typeof SECTIONS[number];
   const scrollRef = useRef<ScrollView | null>(null);
   const [headerH, setHeaderH] = useState(0);
   const [chipsH, setChipsH] = useState(0);
-  const [offsets, setOffsets] = useState<Record<SectionKey, number>>({ Station:0, Location:0, Weather:0, Local:0, Traffic:0, National:0 });
+  const [offsets, setOffsets] = useState<Record<SectionKey, number>>({ Station: 0, Location: 0, Weather: 0, Local: 0, Traffic: 0, National: 0 });
   const [active, setActive] = useState<SectionKey>("Station");
   function onSectionLayout(key: SectionKey, y: number) { setOffsets((o) => ({ ...o, [key]: y })); }
   function scrollToSection(key: SectionKey) { const y = (offsets[key] || 0) - headerH - chipsH; if (y >= 0) scrollRef.current?.scrollTo({ y, animated: true }); }
@@ -428,7 +434,7 @@ export default function DashboardScreen() {
           <View onLayout={(e) => onSectionLayout("Station", e.nativeEvent.layout.y)}>
             <Card title="Station">
               <StationPill />
-              
+
               {/* Radio Stream Status */}
               <View className="mt-3 pt-3 border-t border-gray-100">
                 <View className="flex-row items-center justify-between mb-2">
@@ -446,7 +452,7 @@ export default function DashboardScreen() {
                 <View className="mt-2">
                   <Pressable
                     onPress={async () => {
-                      try { await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
+                      try { await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch { }
                       if (isPlayerOpen) closePlayer(); else openPlayer();
                     }}
                     className={`px-3 py-2 rounded-full ${isPlayerOpen ? 'bg-gray-200' : 'bg-blue-600'}`}
@@ -457,7 +463,7 @@ export default function DashboardScreen() {
                     </Text>
                   </Pressable>
                 </View>
-                
+
                 {/* Stream Health Indicator */}
                 {(playbackState !== "stopped" && playbackState !== "paused") && (
                   <View className="mt-3">
@@ -494,12 +500,12 @@ export default function DashboardScreen() {
                     <Text className="text-3xl font-bold text-gray-800">{Math.round(weather.current.temperature)}°</Text>
                     <Text className="text-gray-500">Wind {Math.round(weather.current.windspeed)} km/h</Text>
                     {(() => {
-                      const idx = weather?.hourly?.time?.findIndex?.((t: string) => t.startsWith(new Date().toISOString().slice(0,13)));
+                      const idx = weather?.hourly?.time?.findIndex?.((t: string) => t.startsWith(new Date().toISOString().slice(0, 13)));
                       const p = idx >= 0 ? weather?.hourly?.precipitation_probability?.[idx] : undefined;
                       const sunrise = weather?.daily?.sunrise?.[0];
                       const sunset = weather?.daily?.sunset?.[0];
                       return (
-                        <Text className="text-gray-400 text-xs mt-0.5">{p!=null ? `Precip ${p}% • ` : ""}Sunrise {sunrise?.slice(11,16)} • Sunset {sunset?.slice(11,16)}</Text>
+                        <Text className="text-gray-400 text-xs mt-0.5">{p != null ? `Precip ${p}% • ` : ""}Sunrise {sunrise?.slice(11, 16)} • Sunset {sunset?.slice(11, 16)}</Text>
                       );
                     })()}
                   </View>
@@ -533,7 +539,7 @@ export default function DashboardScreen() {
 
           {/* Traffic */}
           <View onLayout={(e) => onSectionLayout("Traffic", e.nativeEvent.layout.y)}>
-            <Card title={`Traffic Nearby${city ? ` • ${city}` : ""}`} right={<Pressable onPress={async () => { const q = encodeURIComponent(`traffic ${city||''}`.trim()); const url = Platform.select({ ios: `http://maps.apple.com/?q=${q}`, android: `geo:0,0?q=${q}`, default: `https://maps.google.com/?q=${q}` }); Linking.openURL(url||'https://maps.google.com'); }} className="px-2 py-1 rounded-full bg-gray-200"><Text className="text-gray-700 text-xs">Open Maps</Text></Pressable>}>
+            <Card title={`Traffic Nearby${city ? ` • ${city}` : ""}`} right={<Pressable onPress={async () => { const q = encodeURIComponent(`traffic ${city || ''}`.trim()); const url = Platform.select({ ios: `http://maps.apple.com/?q=${q}`, android: `geo:0,0?q=${q}`, default: `https://maps.google.com/?q=${q}` }); Linking.openURL(url || 'https://maps.google.com'); }} className="px-2 py-1 rounded-full bg-gray-200"><Text className="text-gray-700 text-xs">Open Maps</Text></Pressable>}>
               <TrafficList city={city} />
             </Card>
           </View>
@@ -560,7 +566,7 @@ export default function DashboardScreen() {
           {/* Additional Cards */}
           {(() => {
             const st = useStationStore.getState().stations[0];
-            const extras = (st?.dashboardSections || []).filter(s => s.enabled && !["local-news","traffic","national-news","weather"].includes(s.id));
+            const extras = (st?.dashboardSections || []).filter(s => s.enabled && !["local-news", "traffic", "national-news", "weather"].includes(s.id));
             return extras.map((sec, idx) => (
               <View key={sec.id} onLayout={(e) => onSectionLayout(sec.name as any, e.nativeEvent.layout.y)}>
                 <Card title={sec.name}>
@@ -574,7 +580,7 @@ export default function DashboardScreen() {
             ));
           })()}
         </View>
-       </ScrollView>
+      </ScrollView>
 
       {/* Change Location Modal */}
       <Modal visible={showChange} animationType="fade" transparent onRequestClose={() => setShowChange(false)}>

@@ -29,7 +29,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ error, errorInfo });
     this.props.onError?.(error, errorInfo);
-    
+
     // Provide haptic feedback for errors
     try {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -84,8 +84,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             )}
 
             <View className="flex-row gap-3 w-full">
-              <Pressable 
-                onPress={this.retry} 
+              <Pressable
+                onPress={this.retry}
                 className="flex-1 bg-blue-500 rounded-lg py-4"
               >
                 <View className="flex-row items-center justify-center">
@@ -96,8 +96,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             </View>
           </View>
         </SafeAreaView>
-  );
-}
+      );
+    }
 
     return this.props.children;
   }
@@ -129,12 +129,12 @@ export function useErrorHandler() {
 }
 
 // Loading state component
-export function LoadingState({ 
-  message = "Loading...", 
-  size = "large" 
-}: { 
-  message?: string; 
-  size?: "small" | "large" 
+export function LoadingState({
+  message = "Loading...",
+  size = "large"
+}: {
+  message?: string;
+  size?: "small" | "large"
 }) {
   return (
     <View className={`items-center justify-center ${size === "large" ? "py-12" : "py-6"}`}>
@@ -149,14 +149,14 @@ export function LoadingState({
 }
 
 // Error state component
-export function ErrorState({ 
-  message = "Something went wrong", 
-  onRetry, 
-  size = "large" 
-}: { 
-  message?: string; 
-  onRetry?: () => void; 
-  size?: "small" | "large" 
+export function ErrorState({
+  message = "Something went wrong",
+  onRetry,
+  size = "large"
+}: {
+  message?: string;
+  onRetry?: () => void;
+  size?: "small" | "large"
 }) {
   return (
     <View className={`items-center justify-center ${size === "large" ? "py-12" : "py-6"}`}>
@@ -167,8 +167,8 @@ export function ErrorState({
         {message}
       </Text>
       {onRetry && (
-        <Pressable 
-          onPress={onRetry} 
+        <Pressable
+          onPress={onRetry}
           className={`bg-blue-500 rounded-lg ${size === "large" ? "px-4 py-2" : "px-3 py-1"}`}
         >
           <Text className={`text-white font-medium ${size === "large" ? "text-sm" : "text-xs"}`}>
@@ -181,26 +181,26 @@ export function ErrorState({
 }
 
 // Empty state component
-export function EmptyState({ 
-  icon = "folder-outline", 
-  title = "No items", 
-  message = "Nothing to show here yet", 
+export function EmptyState({
+  icon = "folder-outline",
+  title = "No items",
+  message = "Nothing to show here yet",
   action,
-  size = "large" 
-}: { 
-  icon?: keyof typeof Ionicons.glyphMap; 
-  title?: string; 
-  message?: string; 
-  action?: { label: string; onPress: () => void }; 
-  size?: "small" | "large" 
+  size = "large"
+}: {
+  icon?: keyof typeof Ionicons.glyphMap;
+  title?: string;
+  message?: string;
+  action?: { label: string; onPress: () => void };
+  size?: "small" | "large"
 }) {
   return (
     <View className={`items-center justify-center ${size === "large" ? "py-12" : "py-6"}`}>
-      <Ionicons 
-        name={icon} 
-        size={size === "large" ? 48 : 32} 
-        color="#9CA3AF" 
-        style={{ marginBottom: 12 }} 
+      <Ionicons
+        name={icon}
+        size={size === "large" ? 48 : 32}
+        color="#9CA3AF"
+        style={{ marginBottom: 12 }}
       />
       <Text className={`text-gray-800 font-medium mb-2 text-center ${size === "large" ? "text-lg" : "text-base"}`}>
         {title}
@@ -209,8 +209,8 @@ export function EmptyState({
         {message}
       </Text>
       {action && (
-        <Pressable 
-          onPress={action.onPress} 
+        <Pressable
+          onPress={action.onPress}
           className={`bg-blue-500 rounded-lg ${size === "large" ? "px-6 py-3" : "px-4 py-2"}`}
         >
           <Text className={`text-white font-medium ${size === "large" ? "text-base" : "text-sm"}`}>
